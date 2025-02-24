@@ -1,55 +1,51 @@
-import telebot
-from telebot import types
+import asyncio
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import CommandStart
+from aiogram.types import Message
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums import ParseMode
+
+import keyboards as kb
+
+from dotenv import load_dotenv
+import os
 import random
-TOKEN = '8010365849:AAEvQMxQ2MUGzeIPXhAQe2q9ZORrew4d3hY'
+
+load_dotenv()
+bot = Bot(os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher()
+
+
+@dp.message(CommandStart())
+async def start(message: Message):
+    await message.answer('Выберите действие:', reply_markup=kb.startMenu)
+
+@dp.message(F.text == 'Назад')
+async def backToMainMenu(message: Message):
+    await message.answer('Выберите действие:', reply_markup=kb.startMenu)
+
+@dp.message(F.text == 'Рандом')
+async def rand(message: Message):
+    await message.answer(f"Рандомное число: {random.randint(1000, 10000)}")
+
+@dp.message(F.text == 'Информация')
+async def info(message: Message):
+    await message.answer('Ссылки', reply_markup=kb.urlsMenu)
+
+
+@dp.message(F.text.in_(['Меню']))
+async def submenu(message: Message):
+    await message.answer('Выберите действие:', reply_markup=kb.subMenu)
+
+@dp.message()
+async def echo(message: Message):
+    await message.answer(message.text)
 
 
 
-bot = telebot.TeleBot(TOKEN)
+async def main():
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton('Случайная книга')
-    item2 = types.KeyboardButton('Хочу выбрать жанр')
-    item3 = types.KeyboardButton('Личный кабинет')
-
-    markup.add(item1, item2, item3)
-
-    bot.send_message(message.chat.id, 'Привет, {0.first_name}'.format(message.from_user), reply_markup=markup)
-
-@bot.message_handler(content_types=['text'])
-def bot_message(message):
-    if message.chat.type == 'private':
-        if message.text == 'Случайная книга':
-            bot.send_message(message.chat.id, 'Ваша книга: ' + str(random.randint(0, 1000)))
-        elif message.text == 'Хочу выбрать жанр':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            item1 = types.KeyboardButton('Книги российских авторов')
-            item2 = types.KeyboardButton('Книги зарубежных авторов')
-            back = types.KeyboardButton('Назад')
-            markup.add(item1, item2, back)
-
-            bot.send_message(message.chat.id,'Хочу выбрать жанр', reply_markup = markup)
-
-        elif message.text == 'Книги на иностранных языках':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            item1 = types.KeyboardButton('English')
-            item2 = types.KeyboardButton('Italiano')
-            back = types.KeyboardButton('Назад')
-            markup.add(item1, item2, back)
-
-            bot.send_message(message.chat.id,'Хочу выбрать жанр', reply_markup = markup)
-
-        elif message.text == 'Назад':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            item1 = types.KeyboardButton('Случайная книга')
-            item2 = types.KeyboardButton('Хочу выбрать жанр')
-            item3 = types.KeyboardButton('Книги на иностранных языках')
-
-            markup.add(item1, item2, item3)
-
-            bot.send_message(message.chat.id,'Назад', reply_markup=markup)
-
-
-bot.polling(none_stop= True)
+if __name__ == '__main__':
+    asyncio.run(main())
