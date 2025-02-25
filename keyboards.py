@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup, KeyboardBut
 startMenu = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Рандом'),
+            KeyboardButton(text='Информация'),
             KeyboardButton(text='Меню'),
         ]
     ],
@@ -16,7 +16,7 @@ subMenu = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='Выбрать жанр'),
-            KeyboardButton(text='Информация'),
+            KeyboardButton(text='Случайная книга'),
         ],
         [
             KeyboardButton(text='Назад')

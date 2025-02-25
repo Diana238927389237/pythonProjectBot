@@ -24,7 +24,7 @@ async def start(message: Message):
 async def backToMainMenu(message: Message):
     await message.answer('Выберите действие:', reply_markup=kb.startMenu)
 
-@dp.message(F.text == 'Рандом')
+@dp.message(F.text == 'Случайная книга')
 async def rand(message: Message):
     await message.answer(f"Рандомное число: {random.randint(1000, 10000)}")
 
@@ -49,3 +49,4 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
+
